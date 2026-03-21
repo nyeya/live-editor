@@ -1,96 +1,88 @@
-# Live Editor
+# Nyeya Code Studio 🇬🇭 (Ghana Edition)
 
-I built this app to create a fast, focused in-browser code editor and previewer so I can prototype HTML/CSS/JS quickly and share simple web demos.
+An ultra-modern, high-performance in-browser IDE, live web prototyping sandbox, and developer ecosystem suite tailored for Ghanaian creators, fintech developers, software engineers, and SMEs.
 
-## What it is
+![Ghana Edition](https://img.shields.io/badge/Edition-Ghana%20Developer%20Suite%20🇬🇭-amber?style=for-the-badge)
+![Tech Stack](https://img.shields.io/badge/Stack-React%2018%20%7C%20Vite%20%7C%20Monaco%20%7C%20Tailwind-emerald?style=for-the-badge)
 
-This is a lightweight live code editor with a split layout: editable source panels (HTML, CSS, JavaScript) on the left and a live preview iframe on the right. It includes a console output area that shows logs and runtime errors emitted by the previewed page, an optional developer tools sidebar for inserting snippets/colors, and simple export/save functionality.
+---
 
-## Key features
+## 🌟 Key Highlights & Modern Features
 
-- Editable HTML/CSS/JavaScript panels with Monaco editor integration
-- Live preview rendered inside a sandboxed iframe
-- Console output capture (logs, warnings, errors) from the preview
-- Export current project as a single HTML file
-- Simple toolbar for toggling preview/dev tools, saving, and exporting
-- Resizable panels (vertical/horizontal) for flexible layout
-- Small footer with copyright information
+### 1. 🇬🇭 Ghana Starter Templates Gallery
+- **Mobile Money & Paystack Checkout Gateway**: Interactive MTN MoMo, Telecel Cash, and AT Money modal with live GH₵ calculations and real-time USSD push prompt simulation.
+- **Ghana SME E-Commerce Boutique**: High-converting storefront for Bonwire Kente cloth, pure Northern raw Shea butter, and hand-woven Bolga baskets with WhatsApp direct ordering.
+- **Ghana Card ID Verification (NIA)**: Biometric ID verification widget with live PIN validation and holographic card simulation.
+- **Accra Tech Summit & Meetup Landing Page**: High-energy conference page featuring countdown timers and speaker showcases.
+- **Adinkra & Kente Generative Canvas Art**: Algorithmic canvas generator rendering traditional Ghanaian patterns (*Gye Nyame*, *Sankofa*, *Dwennimmen*).
+- **Modern Ghanaian Developer Portfolio**: Dark-mode personal portfolio highlighting Accra tech stacks, GitHub projects, and MoMo API experience.
 
-## File structure
+### 2. 🛠️ Ghana Tech & DevTools Suite
+- **MoMo Network Detector**: Auto-identifies network carriers (`024/054/055/059` -> MTN, `020/050` -> Telecel, `027/057` -> AT).
+- **Ghana Cedi (GH₵) Price Tag Generator**: Format and generate ready-to-use Cedi currency components.
+- **WhatsApp Quick-Order CTA Builder**: Generate direct WhatsApp ordering links for Ghanaian merchants.
+- **Sacred Adinkra SVG Vector Library**: One-click insert for scalable vector Adinkra symbols.
+- **Smart Ghana Lorem Ipsum**: Toggle between Ghanaian cultural/tech terms (*Accra, Kejetia, Makola, Jollof, Chale Wote, Silicon Accra*) and classic Latin lorem.
+- **Curated Ghanaian Color Palettes**: *Ghana Heritage*, *Royal Kente*, *Accra Coastal Sunset*, and *Fintech Modern*.
 
-Important files and directories:
+### 3. ⚡ Core IDE & Live Prototyping Engine
+- **Monaco Code Editor**: Multi-tab code editor (HTML5, CSS3, JavaScript ES6) with syntax highlighting, word wrap, code beautification / formatting, and font scaling.
+- **Multi-Layout Flexibility**: Split Vertical (Side-by-side), Split Horizontal (Top-bottom), Full Live Preview, and Zen Code mode.
+- **Multi-Device Viewport Simulation**: 
+  - 📟 *KaiOS Feature Phone* (240x320) for USSD & lightweight web apps
+  - 📱 *Mobile Phone* (iPhone 15 / 390x844) with realistic bezel frame
+  - 📱 *Tablet* (iPad Air / 768x1024)
+  - 💻 *Fluid Desktop* (100%)
+- **Live Interactive Console REPL**: Execute JavaScript expressions live inside the sandboxed iframe and inspect filtered logs (*All, Logs, Warnings, Errors, Info*).
+- **Local Workspace Project Manager**: Create, rename, switch, and persist multiple projects in browser memory.
+- **One-Click CDN Injector**: Easily add Tailwind CSS, FontAwesome 6, Animate.css, Google Fonts, and Canvas Confetti.
+- **Standalone HTML Export & Instant URL Sharing**: Export as single-file HTML bundles or share projects via encoded URL hash.
 
-- `src/App.tsx` — app entry that wires the editor and global UI
-- `src/components/CodeEditor.tsx` — the main editor + preview layout
-- `src/components/DevToolsSidebar.tsx` — helper sidebar for quick inserts
-- `src/components/ui/*` — shared UI primitives (buttons, tabs, toast, etc.)
-- `src/index.css` — TailwindCSS configuration and base styles
-- `index.html` — Vite entry HTML
+---
 
-## How to run it locally
+## 🚀 How to Run Locally
 
-Requirements: Node.js (16+ recommended) and npm/yarn/pnpm.
+### Requirements
+- Node.js 18+ and npm / yarn / pnpm
 
-1. Install dependencies
-
+### 1. Install Dependencies
 ```bash
-# with npm
 npm install
-
-# or with pnpm
-pnpm install
-
-# or with yarn
-yarn
 ```
 
-2. Start the dev server
-
+### 2. Launch Development Server
 ```bash
 npm run dev
 ```
 
-The app will open with Vite's dev server, typically at `http://localhost:5173 or http://localhost:3000`.
+The studio will be available at `http://localhost:5173`.
 
-## How it works (brief)
-
-- The editor uses Monaco (via `@monaco-editor/react`) to edit HTML/CSS/JS.
-- When code changes, the app serializes everything into a single HTML string and writes that to a Blob URL which is loaded in the iframe.
-- The preview overrides `console.log`, `console.warn`, `console.error` inside the iframe and posts messages to the parent window so the host app can display console output.
-
-## Development notes & tips
-
-- The preview is sandboxed (`allow-scripts allow-same-origin`) to keep it separated from the host app while allowing scripts to run.
-- To avoid excessive updates, auto-save is debounced in `CodeEditor` (1s delay).
-- More room for improvement and expansion like: adding more editor options (formatting, prettier, linting), by expanding the Monaco options in `CodeEditor`.
-- The `DevToolsSidebar` exposes small helpers; it's a good place to add code snippets or color pickers.
-
-## Accessibility & security considerations
-
-- The iframe is sandboxed to mitigate risks from executing arbitrary code.
-- The UI uses semantic elements where possible. If I add keyboard shortcuts, I'll ensure focus management for the Monaco editor and toolbar controls.
-
-## Deployment
-
-This is a static frontend app that can be built and deployed anywhere that serves static assets (Vercel, Netlify, GitHub Pages, static S3 bucket + CDN, etc.).
-
-Build for production:
-
+### 3. Build for Production
 ```bash
 npm run build
 ```
 
-Then deploy the `dist`/`build` output to any static hosting provider.
+---
 
-## Future ideas
+## 📂 Project Structure
 
-- Add authentication and per-user project storage
-- Persist projects in localStorage with a project list
-- Allow embedding/exporting only the preview (no editor)
-- Add templates for quick starters
-- etc
-
+```
+├── index.html                  # Vite entry with Google Fonts (Plus Jakarta, Outfit, JetBrains Mono)
+├── src/
+│   ├── App.tsx                 # Main application & URL hash loader
+│   ├── components/
+│   │   ├── CodeEditor.tsx      # Core IDE, preview stage, layout engine, REPL dock
+│   │   ├── DevToolsSidebar.tsx # Ghana Dev Suite, Adinkra SVGs, color palettes, glass generators
+│   │   └── ui/                 # Radix UI primitives (Dialog, Button, Tabs, Slider, etc.)
+│   ├── lib/
+│   │   ├── ghanaUtils.ts       # Adinkra SVGs, MoMo carriers, Cedi formatter, Ghana Lorem, Beautifier
+│   │   ├── templates.ts        # Production-ready Ghanaian starter templates
+│   │   └── utils.ts            # Class name merging utilities
+│   └── index.css               # Obsidian luxury studio theme, glassmorphic tokens, glowing borders
+```
 
 ---
 
-Feel free to try it. You can also fork this repo and make changes
+## 📜 License & Credits
+
+Built with ❤️ by **Nyeya** for developers in Ghana 🇬🇭 and worldwide.
