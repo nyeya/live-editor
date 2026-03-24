@@ -7,7 +7,7 @@ An ultra-modern, high-performance in-browser IDE, live web prototyping sandbox, 
 
 ---
 
-## 🌟 Key Highlights & Modern Features
+## 🌟 Key Highlights and Modern Features
 
 ### 1. 🇬🇭 Ghana Starter Templates Gallery
 - **Mobile Money & Paystack Checkout Gateway**: Interactive MTN MoMo, Telecel Cash, and AT Money modal with live GH₵ calculations and real-time USSD push prompt simulation.
