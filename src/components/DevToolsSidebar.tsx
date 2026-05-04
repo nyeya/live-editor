@@ -1,30 +1,26 @@
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Slider } from './ui/slider';
-import { Badge } from './ui/badge';
 import { ScrollArea } from './ui/scroll-area';
 import { 
   Palette, 
   Copy, 
   Type, 
   Box, 
+  Code2, 
+  Check, 
   Sparkles,
-  Phone,
-  Code2,
-  Check,
-  Globe
+  Image as ImageIcon
 } from 'lucide-react';
 import { useToast } from '../hooks/use-toast';
 import { 
-  ADINKRA_SYMBOLS, 
-  detectGhanaCarrier, 
-  generateGhanaLorem, 
-  formatGhanaCedi 
-} from '../lib/ghanaUtils';
+  VECTOR_ICONS, 
+  DESIGNER_PALETTES, 
+  generateLorem 
+} from '../lib/devUtils';
 
 interface DevToolsSidebarProps {
   onColorSelect: (color: string) => void;
@@ -36,37 +32,31 @@ export function DevToolsSidebar({ onColorSelect, onCodeInsert }: DevToolsSidebar
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   // Color Picker State
-  const [selectedColor, setSelectedColor] = useState('#EE9B00');
+  const [selectedColor, setSelectedColor] = useState('#6366F1');
   const [colorFormat, setColorFormat] = useState<'hex' | 'rgb' | 'hsl'>('hex');
   
-  // Ghana Dev Tools State
-  const [ghPhone, setGhPhone] = useState('0241234567');
-  const [cediAmount, setCediAmount] = useState('250');
-  const [waNumber, setWaNumber] = useState('233241234567');
-  const [waMessage, setWaMessage] = useState('Hello, I would like to place an order.');
-
   // Box Shadow State
   const [shadowX, setShadowX] = useState([0]);
   const [shadowY, setShadowY] = useState([4]);
   const [shadowBlur, setShadowBlur] = useState([16]);
   const [shadowSpread, setShadowSpread] = useState([0]);
   const [shadowColor, setShadowColor] = useState('#000000');
-  const [shadowOpacity, setShadowOpacity] = useState([0.3]);
+  const [shadowOpacity, setShadowOpacity] = useState([0.35]);
   
   // Border Radius State
   const [borderRadius, setBorderRadius] = useState([12]);
   
   // Glassmorphism State
   const [glassBlur, setGlassBlur] = useState([12]);
-  const [glassOpacity, setGlassOpacity] = useState([0.6]);
+  const [glassOpacity, setGlassOpacity] = useState([0.65]);
 
   // Gradient State
-  const [gradientColor1, setGradientColor1] = useState('#EE9B00');
-  const [gradientColor2, setGradientColor2] = useState('#10B981');
+  const [gradientColor1, setGradientColor1] = useState('#6366F1');
+  const [gradientColor2, setGradientColor2] = useState('#3B82F6');
   const [gradientDirection, setGradientDirection] = useState('135deg');
   
   // Lorem Ipsum
-  const [loremMode, setLoremMode] = useState<'ghana' | 'classic'>('ghana');
+  const [loremMode, setLoremMode] = useState<'tech' | 'classic'>('tech');
   const [loremWords, setLoremWords] = useState(30);
 
   const copyToClipboard = (text: string, id?: string) => {
@@ -135,84 +125,67 @@ border-radius: ${borderRadius[0]}px;`;
     return `linear-gradient(${gradientDirection}, ${gradientColor1}, ${gradientColor2})`;
   };
 
-  const generateClassicLorem = (words: number) => {
-    const loremText = "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur";
-    const wordsArray = loremText.split(' ');
-    const result = [];
-    for (let i = 0; i < words; i++) {
-      result.push(wordsArray[i % wordsArray.length]);
-    }
-    return result.join(' ') + '.';
-  };
-
-  const palettes = [
-    { 
-      name: 'Ghana Gold Coast', 
-      colors: ['#0A0B10', '#EE9B00', '#10B981', '#EF4444', '#F4B942'] 
-    },
-    { 
-      name: 'Royal Heritage', 
-      colors: ['#D97706', '#991B1B', '#1E3A8A', '#065F46', '#FBBF24'] 
-    },
-    { 
-      name: 'Accra Coastal', 
-      colors: ['#0F172A', '#0284C7', '#38BDF8', '#F59E0B', '#F97316'] 
-    },
-    { 
-      name: 'Fintech Essentials', 
-      colors: ['#F59E0B', '#DC2626', '#0284C7', '#10B981', '#64748B'] 
-    }
-  ];
-
-  const commonSnippets = [
+  const uiSnippets = [
     {
-      title: 'MoMo Payment Card',
-      category: 'Fintech',
-      code: `<div class="p-4 rounded-xl bg-neutral-900 border border-neutral-800 text-white flex justify-between items-center">
-  <div>
-    <span class="text-xs text-amber-400 font-medium">MTN MoMo</span>
-    <h4 class="text-base font-bold">GH₵ 250.00</h4>
+      title: 'Responsive Navbar',
+      category: 'Navigation',
+      code: `<header class="border-b border-neutral-800 bg-neutral-900/60 backdrop-blur px-6 py-3 flex items-center justify-between">
+  <div class="flex items-center gap-2">
+    <div class="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center font-bold text-white text-xs">A</div>
+    <span class="font-bold text-sm text-white">AppLogo</span>
   </div>
-  <button class="bg-amber-500 hover:bg-amber-400 text-neutral-950 font-semibold px-3 py-1.5 rounded-lg text-xs">
-    Pay Now
+  <nav class="hidden md:flex gap-6 text-xs text-neutral-400">
+    <a href="#" class="hover:text-white transition-colors">Features</a>
+    <a href="#" class="hover:text-white transition-colors">Pricing</a>
+    <a href="#" class="hover:text-white transition-colors">Docs</a>
+  </nav>
+  <button class="bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs px-3.5 py-1.5 rounded-lg transition-colors">
+    Get Started
   </button>
+</header>`
+    },
+    {
+      title: 'Modal Dialog Box',
+      category: 'Overlay',
+      code: `<div class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+  <div class="max-w-md w-full bg-neutral-900 border border-neutral-800 rounded-2xl p-6 shadow-2xl space-y-4">
+    <h3 class="text-lg font-bold text-white">Confirm Action</h3>
+    <p class="text-xs text-neutral-400">Are you sure you want to proceed with this operation?</p>
+    <div class="flex justify-end gap-2 pt-2">
+      <button class="px-3.5 py-1.5 rounded-lg text-xs text-neutral-400 hover:bg-neutral-800">Cancel</button>
+      <button class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white">Confirm</button>
+    </div>
+  </div>
 </div>`
     },
     {
-      title: 'WhatsApp Order Button',
-      category: 'Commerce',
-      code: `<a href="https://wa.me/233241234567?text=Hello%20I%20want%20to%20order" target="_blank" 
-   class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-2.5 px-4 rounded-lg text-xs transition-all">
-  <i class="fa-brands fa-whatsapp text-sm"></i>
-  <span>Order via WhatsApp</span>
-</a>`
+      title: 'Shimmer Skeleton Loader',
+      category: 'Feedback',
+      code: `<div class="p-4 rounded-xl bg-neutral-900 border border-neutral-800 space-y-3 animate-pulse">
+  <div class="h-4 bg-neutral-800 rounded w-1/3"></div>
+  <div class="h-3 bg-neutral-800/60 rounded w-full"></div>
+  <div class="h-3 bg-neutral-800/60 rounded w-4/5"></div>
+</div>`
     },
     {
-      title: 'Frosted Glass Surface',
-      category: 'UI',
-      code: `<div class="p-5 rounded-xl bg-neutral-900/70 backdrop-blur-md border border-white/10 shadow-lg text-white">
-  <h3 class="text-base font-semibold">Glass Container</h3>
-  <p class="text-neutral-400 text-xs mt-1">Sleek translucent container with subtle border.</p>
-</div>`
+      title: 'Gradient CTA Button',
+      category: 'Buttons',
+      code: `<button class="relative group overflow-hidden rounded-xl p-[1px] font-semibold text-xs transition-all active:scale-95 shadow-lg shadow-indigo-500/20">
+  <span class="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-300 group-hover:opacity-90"></span>
+  <span class="relative block px-4 py-2 rounded-[11px] bg-neutral-950 text-white transition-colors group-hover:bg-transparent">
+    Explore Platform &rarr;
+  </span>
+</button>`
     },
     {
       title: 'Dark Mode Switcher',
-      category: 'JS',
+      category: 'JavaScript',
       code: `function toggleTheme() {
   document.documentElement.classList.toggle('dark');
   localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
 }`
-    },
-    {
-      title: 'Responsive Card Grid',
-      category: 'CSS',
-      code: `display: grid;
-grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-gap: 1rem;`
     }
   ];
-
-  const currentCarrier = detectGhanaCarrier(ghPhone);
 
   return (
     <div className="h-full flex flex-col bg-card text-foreground select-none font-sans text-xs">
@@ -220,183 +193,32 @@ gap: 1rem;`
       <div className="h-10 px-3 border-b border-border/80 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="font-semibold text-xs text-neutral-200">DevTools</span>
-          <span className="text-[10px] text-neutral-500 font-mono">Ghana Kit</span>
+          <span className="text-[10px] text-neutral-500 font-mono">Workspace Suite</span>
         </div>
       </div>
 
       <ScrollArea className="flex-1">
         <div className="p-3">
-          <Tabs defaultValue="ghana" className="space-y-3">
+          <Tabs defaultValue="colors" className="space-y-3">
             <TabsList className="grid w-full grid-cols-5 bg-neutral-900/80 p-0.5 rounded-lg border border-neutral-800">
-              <TabsTrigger value="ghana" className="text-[11px] h-6 data-[state=active]:bg-neutral-800 data-[state=active]:text-white font-medium">
-                Ghana
-              </TabsTrigger>
-              <TabsTrigger value="colors" className="text-[11px] h-6 data-[state=active]:bg-neutral-800 data-[state=active]:text-white">
+              <TabsTrigger value="colors" title="Colors & Palettes" className="text-[11px] h-6 data-[state=active]:bg-neutral-800 data-[state=active]:text-white">
                 <Palette className="h-3 w-3" />
               </TabsTrigger>
-              <TabsTrigger value="effects" className="text-[11px] h-6 data-[state=active]:bg-neutral-800 data-[state=active]:text-white">
+              <TabsTrigger value="effects" title="CSS Generators" className="text-[11px] h-6 data-[state=active]:bg-neutral-800 data-[state=active]:text-white">
                 <Box className="h-3 w-3" />
               </TabsTrigger>
-              <TabsTrigger value="snippets" className="text-[11px] h-6 data-[state=active]:bg-neutral-800 data-[state=active]:text-white">
+              <TabsTrigger value="snippets" title="UI Components" className="text-[11px] h-6 data-[state=active]:bg-neutral-800 data-[state=active]:text-white">
                 <Code2 className="h-3 w-3" />
               </TabsTrigger>
-              <TabsTrigger value="content" className="text-[11px] h-6 data-[state=active]:bg-neutral-800 data-[state=active]:text-white">
+              <TabsTrigger value="icons" title="Vector Icons" className="text-[11px] h-6 data-[state=active]:bg-neutral-800 data-[state=active]:text-white">
+                <Sparkles className="h-3 w-3" />
+              </TabsTrigger>
+              <TabsTrigger value="content" title="Lorem Generator" className="text-[11px] h-6 data-[state=active]:bg-neutral-800 data-[state=active]:text-white">
                 <Type className="h-3 w-3" />
               </TabsTrigger>
             </TabsList>
 
-            {/* TAB 1: GHANA TOOLS */}
-            <TabsContent value="ghana" className="space-y-3">
-              
-              {/* MoMo Carrier Detector */}
-              <div className="p-3 rounded-lg border border-border/70 bg-neutral-900/40 space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-neutral-200 flex items-center gap-1.5">
-                    <Phone className="h-3 w-3 text-neutral-400" /> MoMo Carrier Detector
-                  </span>
-                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-neutral-800 text-neutral-300 border border-neutral-700">
-                    {currentCarrier.name}
-                  </span>
-                </div>
-
-                <div>
-                  <Label className="text-[10px] text-neutral-500">Phone / MoMo Number</Label>
-                  <Input
-                    value={ghPhone}
-                    onChange={(e) => setGhPhone(e.target.value)}
-                    placeholder="024XXXXXXX"
-                    className="h-7 text-xs font-mono bg-neutral-900 border-neutral-800 mt-1"
-                  />
-                </div>
-
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="w-full text-xs h-7 border-neutral-800 hover:bg-neutral-800 text-neutral-300"
-                  onClick={() => {
-                    const snippet = `<div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-neutral-900 border border-neutral-800">
-  <span class="text-xs font-medium text-amber-400">${currentCarrier.name}</span>
-  <span class="text-xs font-mono text-neutral-300">${ghPhone}</span>
-</div>`;
-                    onCodeInsert(snippet);
-                    copyToClipboard(snippet);
-                  }}
-                >
-                  <Copy className="h-3 w-3 mr-1.5 text-neutral-400" /> Insert Component
-                </Button>
-              </div>
-
-              {/* Ghana Cedi Formatter */}
-              <div className="p-3 rounded-lg border border-border/70 bg-neutral-900/40 space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-neutral-200">Cedi Price Component</span>
-                  <span className="font-mono text-xs font-semibold text-amber-400">
-                    {formatGhanaCedi(parseFloat(cediAmount) || 0)}
-                  </span>
-                </div>
-
-                <div>
-                  <Label className="text-[10px] text-neutral-500">Amount (GH₵)</Label>
-                  <Input
-                    type="number"
-                    value={cediAmount}
-                    onChange={(e) => setCediAmount(e.target.value)}
-                    className="h-7 text-xs font-mono bg-neutral-900 border-neutral-800 mt-1"
-                  />
-                </div>
-
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  className="w-full text-xs h-7 bg-neutral-800 hover:bg-neutral-700 text-neutral-200"
-                  onClick={() => {
-                    const snippet = `<div class="inline-flex items-baseline gap-1 bg-neutral-900 border border-neutral-800 px-2.5 py-1 rounded-lg">
-  <span class="text-[11px] text-neutral-400 font-medium">GH₵</span>
-  <span class="text-sm font-bold text-neutral-100 font-mono">${parseFloat(cediAmount || '0').toFixed(2)}</span>
-</div>`;
-                    onCodeInsert(snippet);
-                    copyToClipboard(snippet);
-                  }}
-                >
-                  <Copy className="h-3 w-3 mr-1.5 text-neutral-400" /> Insert Price Tag
-                </Button>
-              </div>
-
-              {/* WhatsApp CTA Generator */}
-              <div className="p-3 rounded-lg border border-border/70 bg-neutral-900/40 space-y-2.5">
-                <span className="text-xs font-semibold text-neutral-200 flex items-center gap-1.5">
-                  <Globe className="h-3 w-3 text-neutral-400" /> WhatsApp Direct Order Button
-                </span>
-
-                <div className="space-y-1.5">
-                  <div>
-                    <Label className="text-[10px] text-neutral-500">Number (233XXXXXXXXX)</Label>
-                    <Input
-                      value={waNumber}
-                      onChange={(e) => setWaNumber(e.target.value)}
-                      className="h-7 text-xs font-mono bg-neutral-900 border-neutral-800 mt-0.5"
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-[10px] text-neutral-500">Order Message</Label>
-                    <Input
-                      value={waMessage}
-                      onChange={(e) => setWaMessage(e.target.value)}
-                      className="h-7 text-xs bg-neutral-900 border-neutral-800 mt-0.5"
-                    />
-                  </div>
-                </div>
-
-                <Button
-                  size="sm"
-                  className="w-full text-xs h-7 bg-neutral-800 hover:bg-neutral-700 text-neutral-200"
-                  onClick={() => {
-                    const encoded = encodeURIComponent(waMessage);
-                    const snippet = `<a href="https://wa.me/${waNumber}?text=${encoded}" target="_blank" class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-2 px-3.5 rounded-lg text-xs transition-colors">
-  <i class="fa-brands fa-whatsapp text-sm"></i>
-  <span>Order on WhatsApp</span>
-</a>`;
-                    onCodeInsert(snippet);
-                    copyToClipboard(snippet);
-                  }}
-                >
-                  <Copy className="h-3 w-3 mr-1.5 text-neutral-400" /> Insert WhatsApp CTA
-                </Button>
-              </div>
-
-              {/* Adinkra Vector Symbols */}
-              <div className="p-3 rounded-lg border border-border/70 bg-neutral-900/40 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-neutral-200">Adinkra Vector Library</span>
-                  <span className="text-[10px] text-neutral-500">SVG</span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-1.5">
-                  {ADINKRA_SYMBOLS.map((symbol) => (
-                    <div 
-                      key={symbol.name}
-                      className="p-2 rounded-md border border-neutral-800/80 bg-neutral-900/60 hover:border-neutral-700 hover:bg-neutral-900 transition-colors cursor-pointer group flex flex-col justify-between"
-                      onClick={() => {
-                        onCodeInsert(symbol.svg);
-                        copyToClipboard(symbol.svg, symbol.name);
-                      }}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-semibold text-neutral-300 group-hover:text-amber-400 truncate">
-                          {symbol.name}
-                        </span>
-                        {copiedId === symbol.name ? <Check className="h-2.5 w-2.5 text-emerald-400" /> : <Copy className="h-2.5 w-2.5 text-neutral-600 group-hover:text-neutral-400" />}
-                      </div>
-                      <div className="w-6 h-6 text-neutral-300 group-hover:text-amber-400 mx-auto my-1 transition-colors" dangerouslySetInnerHTML={{ __html: symbol.svg }} />
-                      <span className="text-[9px] text-neutral-500 truncate text-center">{symbol.literal}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-            </TabsContent>
-
-            {/* TAB 2: PALETTES & COLORS */}
+            {/* TAB 1: COLORS & PALETTES */}
             <TabsContent value="colors" className="space-y-3">
               <div className="p-3 rounded-lg border border-border/70 bg-neutral-900/40 space-y-2.5">
                 <span className="text-xs font-semibold text-neutral-200">Color Inspector</span>
@@ -438,10 +260,10 @@ gap: 1rem;`
                 </Button>
               </div>
 
-              {/* Curated Palettes */}
+              {/* Curated Designer Palettes */}
               <div className="p-3 rounded-lg border border-border/70 bg-neutral-900/40 space-y-2">
-                <span className="text-xs font-semibold text-neutral-200">Curated Palettes</span>
-                {palettes.map((palette) => (
+                <span className="text-xs font-semibold text-neutral-200">Designer Palettes</span>
+                {DESIGNER_PALETTES.map((palette) => (
                   <div key={palette.name} className="space-y-1">
                     <span className="text-[10px] text-neutral-400 font-medium">{palette.name}</span>
                     <div className="flex gap-1">
@@ -465,7 +287,7 @@ gap: 1rem;`
 
               {/* Gradient Builder */}
               <div className="p-3 rounded-lg border border-border/70 bg-neutral-900/40 space-y-2.5">
-                <span className="text-xs font-semibold text-neutral-200">Gradient Builder</span>
+                <span className="text-xs font-semibold text-neutral-200">Gradient Generator</span>
                 <div className="grid grid-cols-2 gap-2">
                   <Input
                     type="color"
@@ -499,7 +321,7 @@ gap: 1rem;`
               </div>
             </TabsContent>
 
-            {/* TAB 3: EFFECTS */}
+            {/* TAB 2: VISUAL FX & GENERATORS */}
             <TabsContent value="effects" className="space-y-3">
               {/* Glassmorphism */}
               <div className="p-3 rounded-lg border border-border/70 bg-neutral-900/40 space-y-2.5">
@@ -518,7 +340,7 @@ gap: 1rem;`
                     WebkitBackdropFilter: `blur(${glassBlur[0]}px)`,
                   }}
                 >
-                  Surface Preview
+                  Glass Surface Preview
                 </div>
 
                 <Button
@@ -560,11 +382,32 @@ gap: 1rem;`
                   <Copy className="h-3 w-3 mr-1.5 text-neutral-400" /> Copy Shadow CSS
                 </Button>
               </div>
+
+              {/* Border Radius */}
+              <div className="p-3 rounded-lg border border-border/70 bg-neutral-900/40 space-y-2.5">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-semibold text-neutral-200">Border Radius</span>
+                  <span className="font-mono text-[10px] text-neutral-500">{borderRadius[0]}px</span>
+                </div>
+                
+                <Slider value={borderRadius} onValueChange={setBorderRadius} max={32} min={0} step={1} />
+                
+                <Button
+                  onClick={() => {
+                    const radius = `border-radius: ${borderRadius[0]}px;`;
+                    onCodeInsert(radius);
+                    copyToClipboard(radius);
+                  }}
+                  className="w-full h-7 text-xs bg-neutral-800 hover:bg-neutral-700 text-neutral-200"
+                >
+                  <Copy className="h-3 w-3 mr-1.5 text-neutral-400" /> Copy Radius CSS
+                </Button>
+              </div>
             </TabsContent>
 
-            {/* TAB 4: CODE SNIPPETS */}
+            {/* TAB 3: UI COMPONENTS */}
             <TabsContent value="snippets" className="space-y-2">
-              {commonSnippets.map((snippet, idx) => (
+              {uiSnippets.map((snippet, idx) => (
                 <div key={idx} className="p-2.5 rounded-lg border border-neutral-800 bg-neutral-900/50 space-y-1.5">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-semibold text-neutral-200">{snippet.title}</span>
@@ -585,17 +428,70 @@ gap: 1rem;`
               ))}
             </TabsContent>
 
-            {/* TAB 5: SMART LOREM */}
+            {/* TAB 4: ICONS & ASSETS */}
+            <TabsContent value="icons" className="space-y-3">
+              <div className="p-3 rounded-lg border border-border/70 bg-neutral-900/40 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-neutral-200">Vector SVG Icons</span>
+                  <span className="text-[10px] text-neutral-500">Click to insert</span>
+                </div>
+
+                <div className="grid grid-cols-4 gap-1.5">
+                  {VECTOR_ICONS.map((icon) => (
+                    <button
+                      key={icon.name}
+                      title={icon.name}
+                      className="p-2 rounded-md border border-neutral-800 bg-neutral-900/60 hover:border-neutral-700 hover:bg-neutral-800 text-neutral-300 hover:text-white flex flex-col items-center justify-center gap-1 transition-colors"
+                      onClick={() => {
+                        onCodeInsert(icon.svg);
+                        copyToClipboard(icon.svg, icon.name);
+                      }}
+                    >
+                      <div dangerouslySetInnerHTML={{ __html: icon.svg }} />
+                      <span className="text-[9px] text-neutral-500 truncate max-w-full">{icon.name}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Unsplash Image Placeholders */}
+              <div className="p-3 rounded-lg border border-border/70 bg-neutral-900/40 space-y-2">
+                <span className="text-xs font-semibold text-neutral-200">Image Placeholders</span>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {[
+                    { label: 'Abstract Tech', url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80' },
+                    { label: 'Modern Office', url: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&auto=format&fit=crop&q=80' },
+                    { label: 'User Avatar', url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80' },
+                    { label: 'Dark Minimal', url: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=80' }
+                  ].map((img) => (
+                    <button
+                      key={img.label}
+                      className="p-2 rounded-md border border-neutral-800 bg-neutral-900/60 hover:border-neutral-700 hover:bg-neutral-800 text-left text-xs text-neutral-300 transition-colors flex items-center justify-between"
+                      onClick={() => {
+                        const tag = `<img src="${img.url}" alt="${img.label}" class="rounded-xl w-full object-cover" />`;
+                        onCodeInsert(tag);
+                        copyToClipboard(tag);
+                      }}
+                    >
+                      <span className="truncate">{img.label}</span>
+                      <ImageIcon className="h-3 w-3 text-neutral-500" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* TAB 5: LOREM GENERATOR */}
             <TabsContent value="content" className="space-y-3">
               <div className="p-3 rounded-lg border border-border/70 bg-neutral-900/40 space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-neutral-200">Smart Filler Generator</span>
+                  <span className="text-xs font-semibold text-neutral-200">Lorem Ipsum Generator</span>
                   <div className="flex bg-neutral-900 rounded p-0.5 border border-neutral-800">
                     <button
-                      className={`px-1.5 py-0.5 text-[10px] font-medium rounded ${loremMode === 'ghana' ? 'bg-neutral-800 text-white' : 'text-neutral-500 hover:text-neutral-300'}`}
-                      onClick={() => setLoremMode('ghana')}
+                      className={`px-1.5 py-0.5 text-[10px] font-medium rounded ${loremMode === 'tech' ? 'bg-neutral-800 text-white' : 'text-neutral-500 hover:text-neutral-300'}`}
+                      onClick={() => setLoremMode('tech')}
                     >
-                      Ghana Terms
+                      Tech Terms
                     </button>
                     <button
                       className={`px-1.5 py-0.5 text-[10px] font-medium rounded ${loremMode === 'classic' ? 'bg-neutral-800 text-white' : 'text-neutral-500 hover:text-neutral-300'}`}
@@ -620,13 +516,13 @@ gap: 1rem;`
                   />
                 </div>
 
-                <div className="p-2 rounded bg-neutral-950 border border-neutral-800/80 text-[11px] text-neutral-400 max-h-24 overflow-y-auto leading-relaxed">
-                  {loremMode === 'ghana' ? generateGhanaLorem(loremWords) : generateClassicLorem(loremWords)}
+                <div className="p-2.5 rounded bg-neutral-950 border border-neutral-800/80 text-[11px] text-neutral-400 max-h-28 overflow-y-auto leading-relaxed">
+                  {generateLorem(loremMode, loremWords)}
                 </div>
 
                 <Button
                   onClick={() => {
-                    const text = loremMode === 'ghana' ? generateGhanaLorem(loremWords) : generateClassicLorem(loremWords);
+                    const text = generateLorem(loremMode, loremWords);
                     onCodeInsert(text);
                     copyToClipboard(text);
                   }}
