@@ -38,8 +38,8 @@ import {
 } from 'lucide-react';
 import { useToast } from '../hooks/use-toast';
 import { DevToolsSidebar } from './DevToolsSidebar';
-import { GHANA_STARTER_TEMPLATES, StarterTemplate } from '../lib/templates';
-import { beautifyCode } from '../lib/ghanaUtils';
+import { STARTER_TEMPLATES, StarterTemplate } from '../lib/templates';
+import { beautifyCode } from '../lib/devUtils';
 
 interface ProjectData {
   id: string;
@@ -57,7 +57,7 @@ interface ConsoleMessage {
   time: string;
 }
 
-type ViewportSize = 'kaios' | 'mobile' | 'tablet' | 'desktop';
+type ViewportSize = 'mobile-sm' | 'mobile' | 'tablet' | 'desktop';
 type LayoutMode = 'split-horizontal' | 'split-vertical' | 'preview-only' | 'code-only';
 type ActiveTab = 'html' | 'css' | 'js';
 
@@ -78,9 +78,9 @@ export function CodeEditor({
 }: CodeEditorProps) {
   const { toast } = useToast();
 
-  const defaultTemplate = GHANA_STARTER_TEMPLATES[0];
+  const defaultTemplate = STARTER_TEMPLATES[0]; // SaaS Analytics Dashboard
   
-  const [currentProjectName, setCurrentProjectName] = useState('Ghana MoMo Gateway');
+  const [currentProjectName, setCurrentProjectName] = useState('Analytics Dashboard');
   const [html, setHtml] = useState(initialHtml ?? defaultTemplate.html);
   const [css, setCss] = useState(initialCss ?? defaultTemplate.css);
   const [js, setJs] = useState(initialJs ?? defaultTemplate.js);
@@ -88,7 +88,7 @@ export function CodeEditor({
   // Projects list in LocalStorage
   const [projects, setProjects] = useState<ProjectData[]>(() => {
     try {
-      const saved = localStorage.getItem('nyeya_studio_projects');
+      const saved = localStorage.getItem('nyeya_live_editor_projects');
       if (saved) return JSON.parse(saved);
     } catch (e) {
       console.error(e);
@@ -96,7 +96,7 @@ export function CodeEditor({
     return [
       {
         id: 'proj-default',
-        name: 'Ghana MoMo Gateway',
+        name: 'Analytics Dashboard',
         html: defaultTemplate.html,
         css: defaultTemplate.css,
         js: defaultTemplate.js,
@@ -133,7 +133,7 @@ export function CodeEditor({
   // Save projects to LocalStorage
   useEffect(() => {
     try {
-      localStorage.setItem('nyeya_studio_projects', JSON.stringify(projects));
+      localStorage.setItem('nyeya_live_editor_projects', JSON.stringify(projects));
     } catch (e) {
       console.error(e);
     }
@@ -279,7 +279,7 @@ export function CodeEditor({
     if (showNotification) {
       toast({
         title: "Saved",
-        description: `Project "${currentProjectName}" is saved.`
+        description: `Project "${currentProjectName}" saved.`
       });
     }
   };
@@ -313,7 +313,7 @@ ${js}
 
     toast({
       title: "Exported",
-      description: "Downloaded single-file HTML bundle."
+      description: "Downloaded standalone HTML file."
     });
   };
 
@@ -339,7 +339,7 @@ ${js}
     setConsoleMessages([]);
     toast({
       title: "Template Loaded",
-      description: `Switched to "${template.name}".`
+      description: `Loaded "${template.name}".`
     });
   };
 
@@ -353,7 +353,7 @@ ${js}
     }
     toast({
       title: "Formatted",
-      description: `Cleaned up ${activeTab.toUpperCase()} code.`
+      description: `Formatted ${activeTab.toUpperCase()} code.`
     });
   };
 
@@ -378,15 +378,15 @@ ${js}
         return `${tag}\n${prev}`;
       });
       toast({
-        title: "Library Added",
-        description: `Injected ${name}.`
+        title: "Library Injected",
+        description: `Added ${name} to HTML head.`
       });
     }
   };
 
   const getViewportDimensions = () => {
     switch (viewportSize) {
-      case 'kaios': return { width: '240px', height: '320px' };
+      case 'mobile-sm': return { width: '320px', height: '568px' };
       case 'mobile': return { width: '375px', height: '667px' };
       case 'tablet': return { width: '768px', height: '1024px' };
       default: return { width: '100%', height: '100%' };
@@ -427,13 +427,13 @@ ${js}
   return (
     <div className="h-screen flex flex-col bg-background text-foreground overflow-hidden font-sans">
       
-      {/* TOP HEADER - Professional, clean, and balanced */}
+      {/* TOP HEADER */}
       <header className="h-12 border-b border-border/80 bg-card px-3 flex items-center justify-between z-30 select-none">
         
         {/* Brand & Project Name */}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-md bg-neutral-900 border border-neutral-700/80 flex items-center justify-center text-amber-400 font-bold text-xs">
+            <div className="w-6 h-6 rounded-md bg-neutral-900 border border-neutral-700 flex items-center justify-center text-indigo-400 font-bold text-xs">
               ★
             </div>
             <div className="flex items-center gap-1.5">
@@ -477,7 +477,7 @@ ${js}
             className="h-7 text-xs font-medium text-neutral-300 hover:text-white hover:bg-neutral-800/70"
             onClick={() => setTemplateModalOpen(true)}
           >
-            <Sparkles className="h-3 w-3 mr-1.5 text-amber-400/90" />
+            <Sparkles className="h-3 w-3 mr-1.5 text-indigo-400" />
             Templates
           </Button>
 
@@ -556,25 +556,25 @@ ${js}
 
           <div className="h-3.5 w-[1px] bg-border mx-1" />
 
-          {/* Clean Segmented Layout Selector */}
+          {/* Segmented Layout Selector */}
           <div className="flex items-center bg-neutral-900 border border-neutral-800 p-0.5 rounded-md">
             <button
               onClick={() => setLayoutMode('split-vertical')}
-              className={`p-1 rounded text-xs transition-colors ${layoutMode === 'split-vertical' ? 'bg-neutral-800 text-white shadow-xs' : 'text-neutral-400 hover:text-neutral-200'}`}
+              className={`p-1 rounded text-xs transition-colors ${layoutMode === 'split-vertical' ? 'bg-neutral-800 text-white' : 'text-neutral-400 hover:text-neutral-200'}`}
               title="Split Vertical"
             >
               <ColumnsIcon />
             </button>
             <button
               onClick={() => setLayoutMode('split-horizontal')}
-              className={`p-1 rounded text-xs transition-colors ${layoutMode === 'split-horizontal' ? 'bg-neutral-800 text-white shadow-xs' : 'text-neutral-400 hover:text-neutral-200'}`}
+              className={`p-1 rounded text-xs transition-colors ${layoutMode === 'split-horizontal' ? 'bg-neutral-800 text-white' : 'text-neutral-400 hover:text-neutral-200'}`}
               title="Split Horizontal"
             >
               <RowsIcon />
             </button>
             <button
               onClick={() => setLayoutMode('preview-only')}
-              className={`p-1 rounded text-xs transition-colors ${layoutMode === 'preview-only' ? 'bg-neutral-800 text-white shadow-xs' : 'text-neutral-400 hover:text-neutral-200'}`}
+              className={`p-1 rounded text-xs transition-colors ${layoutMode === 'preview-only' ? 'bg-neutral-800 text-white' : 'text-neutral-400 hover:text-neutral-200'}`}
               title="Preview Only"
             >
               <Eye className="h-3.5 w-3.5" />
@@ -585,7 +585,7 @@ ${js}
           <Button
             variant="ghost"
             size="sm"
-            className={`h-7 px-2 text-xs font-medium ${showDevTools ? 'text-amber-400 bg-neutral-800/80' : 'text-neutral-400 hover:text-neutral-200'}`}
+            className={`h-7 px-2 text-xs font-medium ${showDevTools ? 'text-indigo-400 bg-neutral-800/80' : 'text-neutral-400 hover:text-neutral-200'}`}
             onClick={() => setShowDevTools(!showDevTools)}
             title="Toggle DevTools Sidebar"
           >
@@ -657,7 +657,7 @@ ${js}
                     </select>
 
                     <button
-                      className={`h-6 px-1.5 text-[11px] font-mono rounded transition-colors ${wordWrap === 'on' ? 'text-amber-400 bg-neutral-800' : 'text-neutral-500 hover:text-neutral-300'}`}
+                      className={`h-6 px-1.5 text-[11px] font-mono rounded transition-colors ${wordWrap === 'on' ? 'text-indigo-400 bg-neutral-800' : 'text-neutral-500 hover:text-neutral-300'}`}
                       onClick={() => setWordWrap(wordWrap === 'on' ? 'off' : 'on')}
                       title="Word Wrap"
                     >
@@ -719,11 +719,11 @@ ${js}
                     {/* Viewport Simulation Switches */}
                     <div className="flex items-center gap-1">
                       <button
-                        className={`h-6 px-2 rounded text-[11px] font-mono transition-colors ${viewportSize === 'kaios' ? 'bg-neutral-800 text-white' : 'text-neutral-400 hover:text-neutral-200'}`}
-                        onClick={() => setViewportSize('kaios')}
-                        title="KaiOS GH (240x320)"
+                        className={`h-6 px-2 rounded text-[11px] font-mono transition-colors ${viewportSize === 'mobile-sm' ? 'bg-neutral-800 text-white' : 'text-neutral-400 hover:text-neutral-200'}`}
+                        onClick={() => setViewportSize('mobile-sm')}
+                        title="Small Mobile (320x568)"
                       >
-                        240p
+                        320p
                       </button>
                       <button
                         className={`h-6 px-2 rounded text-[11px] flex items-center gap-1 transition-colors ${viewportSize === 'mobile' ? 'bg-neutral-800 text-white' : 'text-neutral-400 hover:text-neutral-200'}`}
@@ -785,7 +785,7 @@ ${js}
 
                       {/* Console Toggle */}
                       <button
-                        className={`h-6 px-2 rounded text-[11px] flex items-center gap-1 transition-colors ${showConsole ? 'text-amber-400 bg-neutral-800' : 'text-neutral-400 hover:text-neutral-200'}`}
+                        className={`h-6 px-2 rounded text-[11px] flex items-center gap-1 transition-colors ${showConsole ? 'text-indigo-400 bg-neutral-800' : 'text-neutral-400 hover:text-neutral-200'}`}
                         onClick={() => setShowConsole(!showConsole)}
                         title="Toggle Console"
                       >
@@ -923,14 +923,12 @@ ${js}
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
             Ready
           </span>
-          <span>•</span>
-          <span>Accra (GMT+0)</span>
         </div>
 
         <div className="flex items-center gap-3">
           <span>UTF-8</span>
           <span>Auto-Save {autoSave ? 'On' : 'Off'}</span>
-          <span>Nyeya Studio</span>
+          <span>Nyeya Live Editor</span>
         </div>
       </footer>
 
@@ -942,12 +940,12 @@ ${js}
               Starter Templates Gallery
             </DialogTitle>
             <DialogDescription className="text-neutral-400 text-xs">
-              Select a production-ready template tailored for Ghanaian applications and prototyping.
+              Select a production-ready starter template for rapid prototyping.
             </DialogDescription>
           </DialogHeader>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 my-2">
-            {GHANA_STARTER_TEMPLATES.map((tmpl) => (
+            {STARTER_TEMPLATES.map((tmpl) => (
               <div
                 key={tmpl.id}
                 className="p-3.5 rounded-xl border border-neutral-800 bg-neutral-900/60 hover:border-neutral-700 hover:bg-neutral-900 transition-all flex flex-col justify-between cursor-pointer group"
@@ -960,7 +958,7 @@ ${js}
                     </span>
                     <ChevronRight className="h-3.5 w-3.5 text-neutral-600 group-hover:text-neutral-300 transition-colors" />
                   </div>
-                  <h4 className="font-semibold text-neutral-100 text-sm group-hover:text-amber-400 transition-colors">
+                  <h4 className="font-semibold text-neutral-100 text-sm group-hover:text-indigo-400 transition-colors">
                     {tmpl.name}
                   </h4>
                   <p className="text-xs text-neutral-400 mt-1 leading-relaxed line-clamp-2">
@@ -970,7 +968,7 @@ ${js}
 
                 <div className="mt-3 pt-2.5 border-t border-neutral-800/80 flex items-center justify-between">
                   <span className="text-[10px] text-neutral-500 font-mono">HTML • CSS • JS</span>
-                  <span className="text-xs text-amber-400 font-medium group-hover:underline">Use Template &rarr;</span>
+                  <span className="text-xs text-indigo-400 font-medium group-hover:underline">Use Template &rarr;</span>
                 </div>
               </div>
             ))}
@@ -1026,9 +1024,9 @@ ${js}
               onClick={() => {
                 const newTitle = `Project ${projects.length + 1}`;
                 setCurrentProjectName(newTitle);
-                setHtml(GHANA_STARTER_TEMPLATES[0].html);
-                setCss(GHANA_STARTER_TEMPLATES[0].css);
-                setJs(GHANA_STARTER_TEMPLATES[0].js);
+                setHtml(STARTER_TEMPLATES[0].html);
+                setCss(STARTER_TEMPLATES[0].css);
+                setJs(STARTER_TEMPLATES[0].js);
                 setProjectModalOpen(false);
                 toast({ title: "New Project", description: `Created "${newTitle}".` });
               }}
@@ -1047,7 +1045,7 @@ ${js}
               Add Libraries (CDN)
             </DialogTitle>
             <DialogDescription className="text-xs text-neutral-400">
-              One-click insert popular CSS frameworks and utilities into your HTML head.
+              One-click insert popular CSS frameworks and script utilities into your HTML head.
             </DialogDescription>
           </DialogHeader>
 
@@ -1055,7 +1053,8 @@ ${js}
             {[
               { name: 'Tailwind CSS CDN', tag: '<script src="https://cdn.tailwindcss.com"></script>', desc: 'Utility-first modern CSS framework' },
               { name: 'Font Awesome 6 Icons', tag: '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">', desc: 'Comprehensive vector icon library' },
-              { name: 'Google Fonts (Plus Jakarta & Outfit)', tag: '<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">', desc: 'Modern sans-serif typography' },
+              { name: 'Chart.js', tag: '<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>', desc: 'Flexible JavaScript charting library' },
+              { name: 'Google Fonts (Plus Jakarta & Outfit)', tag: '<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">', desc: 'Modern typography' },
               { name: 'Animate.css', tag: '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>', desc: 'Cross-browser CSS animations' },
               { name: 'Canvas Confetti', tag: '<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>', desc: 'Celebration confetti particle effect' }
             ].map((lib) => (

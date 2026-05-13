@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { CodeEditor } from './components/CodeEditor';
 import { Toaster } from './components/ui/toaster';
-import { GHANA_STARTER_TEMPLATES } from './lib/templates';
+import { STARTER_TEMPLATES } from './lib/templates';
 
 function App() {
-  const defaultTemplate = GHANA_STARTER_TEMPLATES[0]; // MoMo & Paystack Checkout Gateway
+  const defaultTemplate = STARTER_TEMPLATES[0]; // SaaS Analytics Dashboard
   const [initialData, setInitialData] = useState<{ html: string; css: string; js: string }>({
     html: defaultTemplate.html,
     css: defaultTemplate.css,
