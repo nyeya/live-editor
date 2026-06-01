@@ -13,7 +13,8 @@ import {
   Code2, 
   Check, 
   Sparkles,
-  Image as ImageIcon
+  Image as ImageIcon,
+  X
 } from 'lucide-react';
 import { useToast } from '../hooks/use-toast';
 import { 
@@ -25,9 +26,10 @@ import {
 interface DevToolsSidebarProps {
   onColorSelect: (color: string) => void;
   onCodeInsert: (code: string) => void;
+  onClose?: () => void;
 }
 
-export function DevToolsSidebar({ onColorSelect, onCodeInsert }: DevToolsSidebarProps) {
+export function DevToolsSidebar({ onColorSelect, onCodeInsert, onClose }: DevToolsSidebarProps) {
   const { toast } = useToast();
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
@@ -195,6 +197,15 @@ border-radius: ${borderRadius[0]}px;`;
           <span className="font-semibold text-xs text-neutral-200">DevTools</span>
           <span className="text-[10px] text-neutral-500 font-mono">Workspace Suite</span>
         </div>
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="p-1 rounded-md text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors"
+            title="Close DevTools"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
       </div>
 
       <ScrollArea className="flex-1">
