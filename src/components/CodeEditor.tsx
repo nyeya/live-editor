@@ -455,6 +455,43 @@ ${js}
 
   const getLineCount = (code: string) => code.split('\n').length;
 
+  const handleCodeInsert = (code: string, target?: 'html' | 'css' | 'js') => {
+    if (target === 'html' || (!target && code.trim().startsWith('<'))) {
+      setHtml(prev => {
+        if (prev.includes('</body>')) {
+          return prev.replace('</body>', `  ${code}\n</body>`);
+        }
+        return `${prev}\n${code}`;
+      });
+      setActiveTab('html');
+      if (isMobileScreen) setMobileViewMode('code');
+      toast({
+        title: "Component Inserted",
+        description: "Added to index.html within <body>."
+      });
+    } else if (target === 'css' || (!target && (code.includes('{') || code.includes('background:') || code.includes('box-shadow:') || code.includes('border-radius:')))) {
+      setCss(prev => `${prev}\n\n${code}`);
+      setActiveTab('css');
+      if (isMobileScreen) setMobileViewMode('code');
+      toast({
+        title: "Styles Inserted",
+        description: "Added to styles.css."
+      });
+    } else if (target === 'js' || (!target && code.includes('function') && !code.startsWith('<'))) {
+      setJs(prev => `${prev}\n\n${code}`);
+      setActiveTab('js');
+      if (isMobileScreen) setMobileViewMode('code');
+      toast({
+        title: "Script Inserted",
+        description: "Added to script.js."
+      });
+    } else {
+      if (activeTab === 'html') setHtml(prev => prev + '\n' + code);
+      else if (activeTab === 'css') setCss(prev => prev + '\n' + code);
+      else setJs(prev => prev + '\n' + code);
+    }
+  };
+
   return (
     <div className="h-screen flex flex-col bg-background text-foreground overflow-hidden font-sans">
       
@@ -936,11 +973,9 @@ ${js}
                 <DevToolsSidebar 
                   onColorSelect={(color) => {
                     const colorSnippet = `color: ${color};`;
-                    setCurrentCode(getCurrentCode() + '\n' + colorSnippet);
+                    handleCodeInsert(colorSnippet, 'css');
                   }}
-                  onCodeInsert={(code) => {
-                    setCurrentCode(getCurrentCode() + '\n' + code);
-                  }}
+                  onCodeInsert={handleCodeInsert}
                   onClose={() => setShowDevTools(false)}
                 />
               </div>
@@ -951,11 +986,9 @@ ${js}
               <DevToolsSidebar 
                 onColorSelect={(color) => {
                   const colorSnippet = `color: ${color};`;
-                  setCurrentCode(getCurrentCode() + '\n' + colorSnippet);
+                  handleCodeInsert(colorSnippet, 'css');
                 }}
-                onCodeInsert={(code) => {
-                  setCurrentCode(getCurrentCode() + '\n' + code);
-                }}
+                onCodeInsert={handleCodeInsert}
               />
             </div>
           )
