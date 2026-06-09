@@ -156,6 +156,13 @@ export function CodeEditor({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Sync initial props if changed externally
+  useEffect(() => {
+    if (initialHtml !== undefined) setHtml(initialHtml);
+    if (initialCss !== undefined) setCss(initialCss);
+    if (initialJs !== undefined) setJs(initialJs);
+  }, [initialHtml, initialCss, initialJs]);
+
   // Save projects to LocalStorage
   useEffect(() => {
     try {

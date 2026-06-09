@@ -149,7 +149,11 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
 let chartInstance = null;
 
 function initChart() {
-  const ctx = document.getElementById('revenueChart').getContext('2d');
+  const canvas = document.getElementById('revenueChart');
+  if (!canvas || typeof Chart === 'undefined') return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
   const gradient = ctx.createLinearGradient(0, 0, 0, 300);
   gradient.addColorStop(0, 'rgba(99, 102, 241, 0.4)');
   gradient.addColorStop(1, 'rgba(99, 102, 241, 0.0)');
@@ -191,6 +195,7 @@ const transactions = [
 
 function renderTransactions() {
   const container = document.getElementById('transactions-list');
+  if (!container) return;
   container.innerHTML = transactions.map(t => \`
     <div class="flex items-center justify-between p-2.5 rounded-lg bg-neutral-950/80 border border-neutral-800/80 text-xs">
       <div>
@@ -213,10 +218,16 @@ function refreshData() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+function initDashboard() {
   initChart();
   renderTransactions();
-});`
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initDashboard);
+} else {
+  initDashboard();
+}`
   },
   {
     id: 'saas-pricing',
@@ -451,34 +462,38 @@ function confirmPayment(e) {
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }`,
     js: `const canvas = document.getElementById('particleCanvas');
-const ctx = canvas.getContext('2d');
+const ctx = canvas ? canvas.getContext('2d') : null;
 
 let particles = [];
 const numParticles = 120;
 let mouse = { x: null, y: null, radius: 120 };
 
 function resizeCanvas() {
+  if (!canvas) return;
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 }
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
 
-window.addEventListener('mousemove', e => {
-  mouse.x = e.x;
-  mouse.y = e.y;
-});
+if (canvas && ctx) {
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
 
-window.addEventListener('click', e => {
-  for (let i = 0; i < 15; i++) {
-    particles.push(new Particle(e.x, e.y, true));
-  }
-});
+  window.addEventListener('mousemove', e => {
+    mouse.x = e.x;
+    mouse.y = e.y;
+  });
+
+  window.addEventListener('click', e => {
+    for (let i = 0; i < 15; i++) {
+      particles.push(new Particle(e.x, e.y, true));
+    }
+  });
+}
 
 class Particle {
   constructor(x, y, isBurst = false) {
-    this.x = x || Math.random() * canvas.width;
-    this.y = y || Math.random() * canvas.height;
+    this.x = x || (canvas ? Math.random() * canvas.width : 0);
+    this.y = y || (canvas ? Math.random() * canvas.height : 0);
     this.size = Math.random() * 2.5 + 1;
     this.baseX = this.x;
     this.baseY = this.y;
@@ -489,6 +504,7 @@ class Particle {
   }
 
   draw() {
+    if (!ctx) return;
     ctx.fillStyle = this.color;
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
@@ -497,6 +513,7 @@ class Particle {
   }
 
   update() {
+    if (!canvas) return;
     this.x += this.speedX;
     this.y += this.speedY;
 
@@ -520,6 +537,7 @@ class Particle {
 }
 
 function init() {
+  if (!canvas || !ctx) return;
   particles = [];
   for (let i = 0; i < numParticles; i++) {
     particles.push(new Particle());
@@ -527,6 +545,7 @@ function init() {
 }
 
 function connect() {
+  if (!ctx) return;
   for (let a = 0; a < particles.length; a++) {
     for (let b = a; b < particles.length; b++) {
       let dx = particles[a].x - particles[b].x;
@@ -546,6 +565,7 @@ function connect() {
 }
 
 function animate() {
+  if (!canvas || !ctx) return;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   particles.forEach(p => {
     p.update();
@@ -559,8 +579,10 @@ function resetParticles() {
   init();
 }
 
-init();
-animate();`
+if (canvas && ctx) {
+  init();
+  animate();
+}`
   },
   {
     id: '3d-glass-cards',
