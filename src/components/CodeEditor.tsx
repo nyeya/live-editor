@@ -194,75 +194,105 @@ export function CodeEditor({
     }
   }, [html, css, js, isLiveAutoReload]);
 
-  const updatePreview = () => {
-    if (!iframeRef.current) return;
-
-    const combinedCode = `
-      <!DOCTYPE html>
-      <html lang="en">
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Preview</title>
-        <style>
-          ${css}
-        </style>
-      </head>
-      <body>
-        ${html}
-        <script>
-          (function() {
-            function send(level, args) {
-              try {
-                const message = args.map(arg => {
-                  if (typeof arg === 'object') {
-                    try { return JSON.stringify(arg, null, 2); } catch(e) { return String(arg); }
-                  }
-                  return String(arg);
-                }).join(' ');
-                window.parent.postMessage({ type: 'nyeya_console', level: level, message: message }, '*');
-              } catch(e) {}
-            }
-
-            const origLog = console.log;
-            const origWarn = console.warn;
-            const origError = console.error;
-            const origInfo = console.info;
-
-            console.log = function(...args) { send('log', args); origLog.apply(console, args); };
-            console.warn = function(...args) { send('warn', args); origWarn.apply(console, args); };
-            console.error = function(...args) { send('error', args); origError.apply(console, args); };
-            console.info = function(...args) { send('info', args); origInfo.apply(console, args); };
-
-            window.addEventListener('error', function(e) {
-              send('error', [e.message + ' (line ' + e.lineno + ')']);
-            });
-
-            window.addEventListener('message', function(e) {
-              if (e.data && e.data.type === 'nyeya_eval') {
-                try {
-                  const result = eval(e.data.code);
-                  send('info', ['> ' + e.data.code, String(result)]);
-                } catch(err) {
-                  send('error', ['> ' + e.data.code, err.message]);
+  const buildCombinedHtml = (rawHtml: string, rawCss: string, rawJs: string): string => {
+    const consoleScript = `
+      <script>
+        (function() {
+          function send(level, args) {
+            try {
+              const message = args.map(arg => {
+                if (typeof arg === 'object') {
+                  try { return JSON.stringify(arg, null, 2); } catch(e) { return String(arg); }
                 }
-              }
-            });
-          })();
-
-          try {
-            ${js}
-          } catch (error) {
-            console.error('Runtime Error:', error.message);
+                return String(arg);
+              }).join(' ');
+              window.parent.postMessage({ type: 'nyeya_console', level: level, message: message }, '*');
+            } catch(e) {}
           }
-        </script>
-      </body>
-      </html>
+
+          const origLog = console.log;
+          const origWarn = console.warn;
+          const origError = console.error;
+          const origInfo = console.info;
+
+          console.log = function(...args) { send('log', args); origLog.apply(console, args); };
+          console.warn = function(...args) { send('warn', args); origWarn.apply(console, args); };
+          console.error = function(...args) { send('error', args); origError.apply(console, args); };
+          console.info = function(...args) { send('info', args); origInfo.apply(console, args); };
+
+          window.addEventListener('error', function(e) {
+            send('error', [e.message + (e.lineno ? ' (line ' + e.lineno + ')' : '')]);
+          });
+
+          window.addEventListener('message', function(e) {
+            if (e.data && e.data.type === 'nyeya_eval') {
+              try {
+                const result = eval(e.data.code);
+                send('info', ['> ' + e.data.code, String(result)]);
+              } catch(err) {
+                send('error', ['> ' + e.data.code, err.message]);
+              }
+            }
+          });
+        })();
+
+        try {
+          ${rawJs}
+        } catch (error) {
+          console.error('Runtime Error:', error.message);
+        }
+      </script>
     `;
 
-    const blob = new Blob([combinedCode], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    iframeRef.current.src = url;
+    const styleTag = `<style>\n${rawCss}\n</style>`;
+
+    // Check if rawHtml is already a full document
+    const hasHtmlTag = /<html[\s>]/i.test(rawHtml);
+    const hasHeadTag = /<\/head>/i.test(rawHtml);
+    const hasBodyTag = /<\/body>/i.test(rawHtml);
+
+    if (hasHtmlTag || hasHeadTag || hasBodyTag) {
+      let result = rawHtml;
+      
+      // Inject style into head if exists, or before body
+      if (hasHeadTag) {
+        result = result.replace(/<\/head>/i, `${styleTag}\n</head>`);
+      } else if (hasBodyTag) {
+        result = result.replace(/<body[\s>]/i, match => `${styleTag}\n${match}`);
+      } else {
+        result = `${styleTag}\n${result}`;
+      }
+
+      // Inject script inside body before </body> if exists, or append
+      if (hasBodyTag) {
+        result = result.replace(/<\/body>/i, `${consoleScript}\n</body>`);
+      } else {
+        result = `${result}\n${consoleScript}`;
+      }
+
+      return result;
+    }
+
+    // Otherwise, wrap fragment in valid HTML5 boilerplate
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Preview</title>
+  ${styleTag}
+</head>
+<body>
+  ${rawHtml}
+  ${consoleScript}
+</body>
+</html>`;
+  };
+
+  const updatePreview = () => {
+    if (!iframeRef.current) return;
+    const combinedCode = buildCombinedHtml(html, css, js);
+    iframeRef.current.srcdoc = combinedCode;
   };
 
   // Listen for console messages from iframe
@@ -1403,6 +1433,7 @@ function PreviewStageContent({
             <div className="flex-1 w-full bg-white dark:bg-neutral-950 overflow-hidden relative">
               <iframe
                 ref={iframeRef}
+                srcDoc={buildCombinedHtml(html, css, js)}
                 className="w-full h-full border-0"
                 title="Live Mobile Preview"
                 sandbox="allow-scripts allow-same-origin allow-modals allow-forms allow-popups"
@@ -1420,6 +1451,7 @@ function PreviewStageContent({
           >
             <iframe
               ref={iframeRef}
+              srcDoc={buildCombinedHtml(html, css, js)}
               className="w-full h-full border-0"
               title="Live Desktop Preview"
               sandbox="allow-scripts allow-same-origin allow-modals allow-forms allow-popups"
