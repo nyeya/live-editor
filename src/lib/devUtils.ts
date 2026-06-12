@@ -231,3 +231,102 @@ export function beautifyCode(code: string, language: 'html' | 'css' | 'javascrip
 
   return code;
 }
+
+/**
+ * Intelligent HTML Document Compiler
+ * Assembles HTML, CSS, and JS with safe console interceptors and resilient DOM lifecycle.
+ */
+export function buildCombinedHtml(rawHtml: string, rawCss: string, rawJs: string): string {
+  const consoleScript = `
+    <script>
+      (function() {
+        function send(level, args) {
+          try {
+            const message = args.map(arg => {
+              if (typeof arg === 'object') {
+                try { return JSON.stringify(arg, null, 2); } catch(e) { return String(arg); }
+              }
+              return String(arg);
+            }).join(' ');
+            window.parent.postMessage({ type: 'nyeya_console', level: level, message: message }, '*');
+          } catch(e) {}
+        }
+
+        const origLog = console.log;
+        const origWarn = console.warn;
+        const origError = console.error;
+        const origInfo = console.info;
+
+        console.log = function(...args) { send('log', args); origLog.apply(console, args); };
+        console.warn = function(...args) { send('warn', args); origWarn.apply(console, args); };
+        console.error = function(...args) { send('error', args); origError.apply(console, args); };
+        console.info = function(...args) { send('info', args); origInfo.apply(console, args); };
+
+        window.addEventListener('error', function(e) {
+          send('error', [e.message + (e.lineno ? ' (line ' + e.lineno + ')' : '')]);
+        });
+
+        window.addEventListener('message', function(e) {
+          if (e.data && e.data.type === 'nyeya_eval') {
+            try {
+              const result = eval(e.data.code);
+              send('info', ['> ' + e.data.code, String(result)]);
+            } catch(err) {
+              send('error', ['> ' + e.data.code, err.message]);
+            }
+          }
+        });
+      })();
+
+      try {
+        ${rawJs}
+      } catch (error) {
+        console.error('Runtime Error:', error.message);
+      }
+    </script>
+  `;
+
+  const styleTag = `<style>\n${rawCss}\n</style>`;
+
+  // Check if rawHtml is already a full document
+  const hasHtmlTag = /<html[\s>]/i.test(rawHtml);
+  const hasHeadTag = /<\/head>/i.test(rawHtml);
+  const hasBodyTag = /<\/body>/i.test(rawHtml);
+
+  if (hasHtmlTag || hasHeadTag || hasBodyTag) {
+    let result = rawHtml;
+    
+    // Inject style into head if exists, or before body
+    if (hasHeadTag) {
+      result = result.replace(/<\/head>/i, `${styleTag}\n</head>`);
+    } else if (hasBodyTag) {
+      result = result.replace(/<body[\s>]/i, match => `${styleTag}\n${match}`);
+    } else {
+      result = `${styleTag}\n${result}`;
+    }
+
+    // Inject script inside body before </body> if exists, or append
+    if (hasBodyTag) {
+      result = result.replace(/<\/body>/i, `${consoleScript}\n</body>`);
+    } else {
+      result = `${result}\n${consoleScript}`;
+    }
+
+    return result;
+  }
+
+  // Otherwise, wrap fragment in valid HTML5 boilerplate
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Preview</title>
+  ${styleTag}
+</head>
+<body>
+  ${rawHtml}
+  ${consoleScript}
+</body>
+</html>`;
+}
